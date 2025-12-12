@@ -132,7 +132,8 @@ java -jar target/StudentManager-1.0-SNAPSHOT.jar
 
 ## 🎨 Giao diện
 
-![Student Manager](screenshot.png)
+<img width="1919" height="1020" alt="image" src="https://github.com/user-attachments/assets/f7ee3a38-adeb-4df3-9cab-44f59d0792c4" />
+
 
 ### Màu sắc nút
 - 🟢 **Xanh lá**: Thêm sinh viên
