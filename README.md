@@ -228,6 +228,8 @@ Nếu gặp vấn đề, vui lòng:
 2. Xem console log để biết chi tiết lỗi
 3. Tạo Issue trên GitHub
 
+[Diagrams.docx](https://github.com/user-attachments/files/24133834/Diagrams.docx)
+
 ---
 
 **Happy Coding! 🚀**
