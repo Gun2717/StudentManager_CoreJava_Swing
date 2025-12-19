@@ -5,146 +5,200 @@ import fit.se.service.StudentService;
 import fit.se.service.Validator;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
 import java.util.Map;
 
 public class MainView {
+    // Giữ nguyên các khai báo biến cũ
     private JTextField idField, nameField, ageField, emailField, scoreField;
     private JButton btnAdd, btnUpdate, btnDelete, btnSearch, btnImport, btnExport, btnUndo;
-    private JButton btnSortByName, btnSortByScore, btnFilter, btnStatistics, btnAdvancedSearch;
-    private JButton btnRefresh;
+    private JButton btnSortByName, btnSortByScore, btnFilter, btnStatistics, btnAdvancedSearch, btnRefresh;
     private JTable studentTable;
     private DefaultTableModel tableModel;
     private StudentService studentService;
     private Validator validator;
     private JFrame frame;
 
+    // Màu sắc chủ đạo (Modern Palette)
+    private final Color PRIMARY_COLOR = new Color(52, 152, 219);
+    private final Color SECONDARY_COLOR = new Color(44, 62, 80);
+    private final Color BACKGROUND_COLOR = new Color(245, 247, 250);
+    private final Color ACCENT_COLOR = new Color(236, 240, 241);
+
     public MainView() {
         studentService = new StudentService();
         validator = new Validator();
 
-        // Tạo khung giao diện
-        frame = new JFrame("Quản Lý Sinh Viên - Student Management System");
+        frame = new JFrame("Hệ Thống Quản Lý Sinh Viên Pro");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setLayout(new BorderLayout());
-        frame.getContentPane().setBackground(new Color(240, 240, 240));
+        frame.getContentPane().setBackground(BACKGROUND_COLOR);
 
-        // Panel chính
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Panel bao quanh toàn bộ với Padding lớn
+        JPanel container = new JPanel(new BorderLayout(20, 20));
+        container.setBackground(BACKGROUND_COLOR);
+        container.setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // Tạo bảng sinh viên
-        String[] columnNames = {"ID", "Tên", "Tuổi", "Email", "Điểm"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        studentTable = new JTable(tableModel);
-        studentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        studentTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        studentTable.setBackground(Color.WHITE);
-        studentTable.setRowHeight(30);
-        studentTable.setFillsViewportHeight(true);
-        studentTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 15));
-        studentTable.getTableHeader().setBackground(new Color(70, 130, 180));
-        studentTable.getTableHeader().setForeground(Color.WHITE);
+        // 1. HEADER
+        JLabel lblHeader = new JLabel("QUẢN LÝ THÔNG TIN SINH VIÊN", SwingConstants.CENTER);
+        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblHeader.setForeground(SECONDARY_COLOR);
+        lblHeader.setBorder(new EmptyBorder(0, 0, 10, 0));
 
-        // Panel nhập liệu
-        JPanel inputPanel = createInputPanel();
+        // 2. PHẦN NHẬP LIỆU (Input Card)
+        JPanel inputCard = createModernInputPanel();
 
-        // Panel nút chức năng
+        // 3. PHẦN BẢNG
+        JPanel tablePanel = createTablePanel();
+
+        // 4. PHẦN NÚT CHỨC NĂNG
         JPanel buttonPanel = createButtonPanel();
 
-        // Bảng sinh viên
-        JScrollPane scrollPane = new JScrollPane(studentTable);
-        scrollPane.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
-                "Danh sách sinh viên",
-                0, 0, new Font("Times New Roman", Font.BOLD, 16)));
+        // Ghép các phần lại
+        JPanel leftPanel = new JPanel(new BorderLayout(20, 20));
+        leftPanel.setOpaque(false);
+        leftPanel.add(inputCard, BorderLayout.NORTH);
+        leftPanel.add(buttonPanel, BorderLayout.CENTER);
 
-        // Tổng hợp layout
-        mainPanel.add(inputPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        container.add(lblHeader, BorderLayout.NORTH);
+        container.add(leftPanel, BorderLayout.WEST);
+        container.add(tablePanel, BorderLayout.CENTER);
 
-        frame.add(mainPanel);
-
-        // Thiết lập ActionListener cho các nút
+        frame.add(container);
         setupActionListeners();
-
-        // Load dữ liệu ban đầu
         updateTable();
-
         frame.setVisible(true);
     }
 
-    private JPanel createInputPanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 4, 15, 15));
-        panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
-                "Thông tin sinh viên",
-                0, 0, new Font("Times New Roman", Font.BOLD, 16)));
+    private JPanel createModernInputPanel() {
+        // Sử dụng GridBagLayout để căn chỉnh chuẩn xác hơn
+        JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
+        panel.setPreferredSize(new Dimension(450, 350));
+
+        // Tạo viền bo góc và bóng đổ nhẹ (giả lập bằng LineBorder)
         panel.setBorder(BorderFactory.createCompoundBorder(
-                panel.getBorder(),
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
+                new LineBorder(new Color(230, 230, 230), 1, true),
+                new EmptyBorder(25, 25, 25, 25)
+        ));
 
-        // Tạo các trường nhập
-        idField = createStyledTextField();
-        nameField = createStyledTextField();
-        ageField = createStyledTextField();
-        emailField = createStyledTextField();
-        scoreField = createStyledTextField();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 5, 8, 5);
 
-        // Thêm label và field
-        panel.add(createLabel("Mã SV:"));
-        panel.add(idField);
-        panel.add(createLabel("Tên SV:"));
-        panel.add(nameField);
-        panel.add(createLabel("Tuổi:"));
-        panel.add(ageField);
-        panel.add(createLabel("Email:"));
-        panel.add(emailField);
-        panel.add(createLabel("Điểm:"));
-        panel.add(scoreField);
+        // Khởi tạo các fields với Style mới
+        idField = createStyledTextField("Nhập mã SV...");
+        nameField = createStyledTextField("Nhập họ tên...");
+        ageField = createStyledTextField("Nhập tuổi...");
+        emailField = createStyledTextField("Nhập email...");
+        scoreField = createStyledTextField("Nhập điểm (0-10)...");
+
+        // Thêm các thành phần vào Panel
+        addInputRow(panel, gbc, 0, "Mã sinh viên:", idField);
+        addInputRow(panel, gbc, 1, "Họ và tên:", nameField);
+        addInputRow(panel, gbc, 2, "Tuổi:", ageField);
+        addInputRow(panel, gbc, 3, "Email:", emailField);
+        addInputRow(panel, gbc, 4, "Điểm tổng kết:", scoreField);
 
         return panel;
     }
 
-    private JLabel createLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.BOLD, 14));
-        return label;
+    private void addInputRow(JPanel p, GridBagConstraints gbc, int row, String labelText, JTextField field) {
+        gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.weightx = 0.1;
+        JLabel lbl = new JLabel(labelText);
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lbl.setForeground(new Color(70, 70, 70));
+        p.add(lbl, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.9;
+        p.add(field, gbc);
     }
 
-    private JTextField createStyledTextField() {
+    private JTextField createStyledTextField(String placeholder) {
         JTextField textField = new JTextField();
-        textField.setFont(new Font("Arial", Font.PLAIN, 14));
+        textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        textField.setPreferredSize(new Dimension(200, 40));
         textField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+                new LineBorder(new Color(210, 210, 210), 1, true),
+                new EmptyBorder(5, 12, 5, 12)
+        ));
+
+        // Hiệu ứng Focus
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                textField.setBorder(BorderFactory.createCompoundBorder(
+                        new LineBorder(PRIMARY_COLOR, 2, true),
+                        new EmptyBorder(4, 11, 4, 11)
+                ));
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                textField.setBorder(BorderFactory.createCompoundBorder(
+                        new LineBorder(new Color(210, 210, 210), 1, true),
+                        new EmptyBorder(5, 12, 5, 12)
+                ));
+            }
+        });
         return textField;
     }
 
-    private JPanel createButtonPanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 5, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-        panel.setBackground(new Color(240, 240, 240));
+    private JPanel createTablePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
 
-        // Tạo nút
-        btnAdd = createButton("Thêm SV", new Color(46, 204, 113));
-        btnUpdate = createButton("Sửa SV", new Color(52, 152, 219));
-        btnDelete = createButton("Xóa SV", new Color(231, 76, 60));
+        String[] columnNames = {"ID", "HỌ TÊN", "TUỔI", "EMAIL", "ĐIỂM"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        studentTable = new JTable(tableModel);
+
+        // Style cho Table
+        studentTable.setRowHeight(35);
+        studentTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        studentTable.setGridColor(new Color(230, 230, 230));
+        studentTable.setSelectionBackground(new Color(232, 244, 253));
+        studentTable.setSelectionForeground(Color.BLACK);
+        studentTable.setShowVerticalLines(false);
+
+        // Style cho Header Table
+        studentTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        studentTable.getTableHeader().setBackground(new Color(255, 255, 255));
+        studentTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
+        ((JLabel)studentTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
+
+        JScrollPane scrollPane = new JScrollPane(studentTable);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setBorder(new LineBorder(new Color(230, 230, 230)));
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createButtonPanel() {
+        // Tăng số hàng/cột để chứa đủ tất cả các nút của bạn
+        JPanel panel = new JPanel(new GridLayout(0, 2, 12, 12));
+        panel.setOpaque(false);
+
+        // --- KHỞI TẠO TẤT CẢ CÁC NÚT (Đảm bảo không cái nào bị null) ---
+        btnAdd = createButton("Thêm mới", new Color(46, 204, 113));
+        btnUpdate = createButton("Cập nhật", new Color(52, 152, 219));
+        btnDelete = createButton("Xóa bỏ", new Color(231, 76, 60));
+
+        // Những nút này ở bản trước bị thiếu dẫn đến lỗi NullPointerException:
         btnSearch = createButton("Tìm kiếm", new Color(155, 89, 182));
         btnAdvancedSearch = createButton("TK Nâng cao", new Color(142, 68, 173));
 
         btnSortByName = createButton("Sắp xếp Tên", new Color(41, 128, 185));
         btnSortByScore = createButton("Sắp xếp Điểm", new Color(41, 128, 185));
+
         btnFilter = createButton("Lọc Học lực", new Color(243, 156, 18));
         btnStatistics = createButton("Thống kê", new Color(230, 126, 34));
         btnRefresh = createButton("Làm mới", new Color(149, 165, 166));
@@ -153,22 +207,21 @@ public class MainView {
         btnExport = createButton("Export CSV", new Color(39, 174, 96));
         btnUndo = createButton("Hoàn tác", new Color(192, 57, 43));
 
+        // Thêm nút Clear (Xóa trắng)
         JButton btnClear = createButton("Xóa trắng", new Color(127, 140, 141));
         btnClear.addActionListener(e -> clearInputFields());
 
-        // Thêm nút vào panel
+        // --- ADD VÀO PANEL ---
         panel.add(btnAdd);
         panel.add(btnUpdate);
         panel.add(btnDelete);
         panel.add(btnSearch);
         panel.add(btnAdvancedSearch);
-
         panel.add(btnSortByName);
         panel.add(btnSortByScore);
         panel.add(btnFilter);
         panel.add(btnStatistics);
         panel.add(btnRefresh);
-
         panel.add(btnImport);
         panel.add(btnExport);
         panel.add(btnUndo);
@@ -177,26 +230,25 @@ public class MainView {
         return panel;
     }
 
-    private JButton createButton(String text, Color color) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 13));
-        button.setBackground(color);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(12, 15, 12, 15));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    private JButton createButton(String text, Color baseColor) {
+        JButton btn = new JButton(text.toUpperCase());
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(baseColor);
+        btn.setFocusPainted(false);
+        btn.setBorder(new EmptyBorder(12, 20, 12, 20));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Hiệu ứng hover
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
+        // Hiệu ứng Hover mượt mà
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(color.darker());
+                btn.setBackground(baseColor.brighter());
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(color);
+                btn.setBackground(baseColor);
             }
         });
-
-        return button;
+        return btn;
     }
 
     private void setupActionListeners() {
