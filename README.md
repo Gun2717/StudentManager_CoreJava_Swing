@@ -132,7 +132,8 @@ java -jar target/StudentManager-1.0-SNAPSHOT.jar
 
 ## 🎨 Giao diện
 
-<img width="1919" height="1020" alt="image" src="https://github.com/user-attachments/assets/f7ee3a38-adeb-4df3-9cab-44f59d0792c4" />
+<img width="1919" height="1021" alt="image" src="https://github.com/user-attachments/assets/e5b9dad7-126f-4b4e-b38b-b88e1c21ce47" />
+
 
 
 ### Màu sắc nút
