@@ -605,20 +605,26 @@ public class MainView {
                         "Tổng số sinh viên: %d\n" +
                         "Điểm trung bình: %.2f\n" +
                         "Điểm cao nhất: %.2f\n" +
-                        "Điểm thấp nhất: %.2f\n\n" +
+                        "Điểm thấp nhất: %.2f\n" +
+                        "Tuổi trung bình: %.1f\n\n" +
                         "--- Phân loại học lực ---\n" +
-                        "Giỏi (≥ 8.0): %d sinh viên\n" +
-                        "Khá (6.5 - 7.9): %d sinh viên\n" +
-                        "Trung bình (5.0 - 6.4): %d sinh viên\n" +
-                        "Yếu (< 5.0): %d sinh viên",
+                        "Giỏi (≥ 8.0): %d sinh viên (%.1f%%)\n" +
+                        "Khá (6.5 - 7.9): %d sinh viên (%.1f%%)\n" +
+                        "Trung bình (5.0 - 6.4): %d sinh viên (%.1f%%)\n" +
+                        "Yếu (< 5.0): %d sinh viên (%.1f%%)",
                 stats.get("total"),
                 stats.get("average"),
                 stats.get("maxScore"),
                 stats.get("minScore"),
+                stats.get("avgAge"),
                 stats.get("excellent"),
+                stats.get("excellentPercent"),
                 stats.get("good"),
-                stats.get("average"),
-                stats.get("weak")
+                stats.get("goodPercent"),
+                stats.get("average_level"),
+                stats.get("averagePercent"),
+                stats.get("weak"),
+                stats.get("weakPercent")
         );
 
         JOptionPane.showMessageDialog(frame, message,
